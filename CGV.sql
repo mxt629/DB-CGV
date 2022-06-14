@@ -1,0 +1,332 @@
+IF EXISTS (SELECT * FROM sys.databases WHERE name='CGV')
+DROP DATABASE CGV
+GO
+CREATE DATABASE CGV
+GO
+USE CGV
+GO
+
+CREATE TABLE Employees(
+    EmpID VARCHAR(10) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(20),
+    Phone VARCHAR(10),
+    Address NVARCHAR(30),
+    BOD VARCHAR(20)
+)
+GO
+INSERT INTO Employees VALUES ('E001',N'Vũ Duy Khánh','0822409379',N'Đại Mỗ,Hà Đông','09-11-1996')
+INSERT INTO Employees VALUES ('E002',N'Nguyễn Hữu Thịnh','0968668874',N'Đại Mỗ,Hà Đông','06-22-2002')
+
+CREATE TABLE Customers (
+    CusID INT NOT NULL PRIMARY KEY,
+    Name NVARCHAR(20),
+    Phone VARCHAR(10),
+    Address NVARCHAR(30),
+    Email VARCHAR(30),
+    BOD VARCHAR(20)
+)
+GO
+INSERT INTO Customers VALUES (0001,N'Mai Xuân Tiến','0988362662',N'Đội Nhân,Hà Nội','xuantien.6290@gmail.com','02-06-1990')
+INSERT INTO Customers VALUES (0002,N'Nguyễn Bá Quốc','0842252000',N'Đan Phượng,Hà Nội','baquoc@gmail.com','11-12-2000')
+INSERT INTO Customers VALUES (0003,N'Nguyễn Đình Hiến','0946299388',N'Trung Kính,Hà Nội','dinhhien@gmail.com','11-09-1995')
+INSERT INTO Customers VALUES (0004,N'Tống Minh Dương','0374148897',N'Láng,Hà Nội','minhduong@gmail.com','08-08-1997')
+
+CREATE TABLE Tickets(
+    TicketID VARCHAR(10) NOT NULL PRIMARY KEY,
+    CusID INT CONSTRAINT FK_CUS FOREIGN KEY (CusID) REFERENCES Customers(CusID),
+    EmpID VARCHAR(10) CONSTRAINT FK_E FOREIGN KEY (EmpID) REFERENCES Employees(EmpID),
+    PurchaseDate DATE
+)
+GO 
+INSERT INTO Tickets VALUES ('T00001',0001,'E001','06-13-2022')
+INSERT INTO Tickets VALUES ('T00002',0002,'E001','06-13-2022')
+INSERT INTO Tickets VALUES ('T00003',0003,'E002','06-13-2022')
+INSERT INTO Tickets VALUES ('T00004',0004,'E002','06-13-2022')
+
+CREATE TABLE OrderFood(
+    OrderFoodID VARCHAR (10) NOT NULL PRIMARY KEY,
+    CusID INT CONSTRAINT FK_CS FOREIGN KEY (CusID) REFERENCES Customers(CusID),
+)
+GO
+INSERT INTO OrderFood VALUES ('OD0001',0001)
+INSERT INTO OrderFood VALUES ('OD0002',0002)
+INSERT INTO OrderFood VALUES ('OD0003',0003)
+INSERT INTO OrderFood VALUES ('OD0004',0004)
+
+
+CREATE TABLE FoodTypes(
+    FoodTypeID VARCHAR(10) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(20),
+    Size VARCHAR(3),
+    Price MONEY
+)
+GO
+INSERT INTO FoodTypes VALUES ('FT0001',N'Bỏng Nhỏ','M',40000)
+INSERT INTO FoodTypes VALUES ('FT0002',N'Bỏng To','L',60000)
+INSERT INTO FoodTypes VALUES ('FT0003',N'Nước Nhỏ','M',35000)
+INSERT INTO FoodTypes VALUES ('FT0004',N'Nước To','L',50000)
+INSERT INTO FoodTypes VALUES ('FT0005',N'Combo Nhỏ','M',70000)
+INSERT INTO FoodTypes VALUES ('FT0006',N'Combo To','L',100000)
+
+CREATE TABLE Foods(
+    FoodID VARCHAR(10) NOT NULL PRIMARY KEY,
+    FoodTypeID VARCHAR(10) CONSTRAINT FK_FT FOREIGN KEY (FoodTypeID) REFERENCES FoodTypes(FoodTypeID),
+    Name NVARCHAR(50)
+)
+GO
+INSERT INTO Foods VALUES('B01','FT0001',N'Bắp rang bơ thường')
+INSERT INTO Foods VALUES('B02','FT0001',N'Bắp rang bơ phô mai')
+INSERT INTO Foods VALUES('B03','FT0001',N'Bắp rang bơ chocolate')
+INSERT INTO Foods VALUES('B04','FT0002',N'Bắp rang bơ thường to')
+INSERT INTO Foods VALUES('B05','FT0002',N'Bắp rang bơ phô mai to')
+INSERT INTO Foods VALUES('B06','FT0002',N'Bắp rang bơ chocolate to')
+INSERT INTO Foods VALUES('B07','FT0003',N'Pepsi tươi')
+INSERT INTO Foods VALUES('B08','FT0003',N'Fanta tươi')
+INSERT INTO Foods VALUES('B09','FT0004',N'Milo')
+INSERT INTO Foods VALUES('B10','FT0004',N'Pepsi tươi to')
+INSERT INTO Foods VALUES('B11','FT0004',N'Fanta tươi to')
+INSERT INTO Foods VALUES('B12','FT0004',N'Milo to')
+INSERT INTO Foods VALUES('B13','FT0005',N'Bỏng to nước nhỏ')
+INSERT INTO Foods VALUES('B14','FT0006',N'Bỏng to nước to')
+SELECT * FROM Foods 
+CREATE TABLE OFoodDetails(
+    OrderFoodID VARCHAR (10) CONSTRAINT FK_OF FOREIGN KEY (OrderFoodID) REFERENCES OrderFood(OrderFoodID),
+    FoodID VARCHAR(10) CONSTRAINT FK_F FOREIGN KEY (FoodID) REFERENCES Foods(FoodID),
+    Quantity INT,
+    Price MONEY
+)
+GO
+INSERT INTO OFoodDetails VALUES('OD0001','B14',1,100000)
+INSERT INTO OFoodDetails VALUES('OD0002','B02',2,40000)
+INSERT INTO OFoodDetails VALUES('OD0002','B07',1,35000)
+INSERT INTO OFoodDetails VALUES('OD0003','B13',1,70000)
+INSERT INTO OFoodDetails VALUES('OD0004','B11',2,50000)
+CREATE TABLE Cinemas(
+    CinemaID VARCHAR(10) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(50) NOT NULL,
+    OpenHours TIME,
+    CloseHours TIME
+)
+GO
+INSERT INTO Cinemas VALUES('C01',N'CGV Vincom Bà Triệu','10:00:00','02:00:00')
+INSERT INTO Cinemas VALUES('C02',N'CGV Vincom Nguyễn Chí Thanh','10:00:00','02:00:00')
+INSERT INTO Cinemas VALUES('C03',N'CGV Vincom Metropolis','10:00:00','02:00:00')
+INSERT INTO Cinemas VALUES('C04',N'CGV Vincom Times City','10:00:00','02:00:00')
+INSERT INTO Cinemas VALUES('C05',N'CGV Vincom Royal City','10:00:00','02:00:00')
+
+CREATE TABLE RoomCinemaTypes(
+    RoomCinemaTypeID VARCHAR(10) NOT NULL PRIMARY KEY,
+    Name VARCHAR(10)
+)
+GO
+INSERT INTO RoomCinemaTypes VALUES('RCT01','2D')
+INSERT INTO RoomCinemaTypes VALUES('RCT02','3D')
+INSERT INTO RoomCinemaTypes VALUES('RCT03','IMAX')
+INSERT INTO RoomCinemaTypes VALUES('RCT04','SweetBox')
+INSERT INTO RoomCinemaTypes VALUES('RCT05','GoldClass')
+INSERT INTO RoomCinemaTypes VALUES('RCT06','Starrium')
+INSERT INTO RoomCinemaTypes VALUES('RCT07','4DX')
+
+CREATE TABLE RoomCinemas(
+    RoomCinemaID VARCHAR(5) PRIMARY KEY NOT NULL,
+    CinemaID VARCHAR(10) CONSTRAINT FK_C FOREIGN KEY (CinemaID) REFERENCES Cinemas(CinemaID) ,
+    RoomCinemaTypeID VARCHAR(10) CONSTRAINT FK_RCT FOREIGN KEY (RoomCinemaTypeID) REFERENCES RoomCinemaTypes(RoomCinemaTypeID),
+    Name VARCHAR(10)
+)
+GO
+INSERT INTO RoomCinemas VALUES('RC001','C01','RCT01','Room1')
+INSERT INTO RoomCinemas VALUES('RC002','C01','RCT02','Room2')
+INSERT INTO RoomCinemas VALUES('RC003','C01','RCT03','Room3')
+INSERT INTO RoomCinemas VALUES('RC004','C01','RCT04','Room4')
+INSERT INTO RoomCinemas VALUES('RC005','C01','RCT05','Room5')
+INSERT INTO RoomCinemas VALUES('RC006','C01','RCT06','Room6')
+INSERT INTO RoomCinemas VALUES('RC007','C01','RCT07','Room7')
+INSERT INTO RoomCinemas VALUES('RC008','C02','RCT01','Room1')
+INSERT INTO RoomCinemas VALUES('RC009','C02','RCT02','Room2')
+INSERT INTO RoomCinemas VALUES('RC010','C02','RCT03','Room3')
+INSERT INTO RoomCinemas VALUES('RC011','C02','RCT04','Room4')
+INSERT INTO RoomCinemas VALUES('RC012','C02','RCT05','Room5')
+INSERT INTO RoomCinemas VALUES('RC013','C02','RCT06','Room6')
+INSERT INTO RoomCinemas VALUES('RC014','C02','RCT07','Room7')
+INSERT INTO RoomCinemas VALUES('RC015','C03','RCT01','Room1')
+INSERT INTO RoomCinemas VALUES('RC016','C03','RCT02','Room2')
+INSERT INTO RoomCinemas VALUES('RC017','C03','RCT03','Room3')
+INSERT INTO RoomCinemas VALUES('RC018','C03','RCT04','Room4')
+INSERT INTO RoomCinemas VALUES('RC019','C03','RCT05','Room5')
+INSERT INTO RoomCinemas VALUES('RC020','C03','RCT06','Room6')
+INSERT INTO RoomCinemas VALUES('RC021','C03','RCT07','Room7')
+INSERT INTO RoomCinemas VALUES('RC022','C04','RCT01','Room1')
+INSERT INTO RoomCinemas VALUES('RC023','C04','RCT02','Room2')
+INSERT INTO RoomCinemas VALUES('RC024','C04','RCT03','Room3')
+INSERT INTO RoomCinemas VALUES('RC025','C04','RCT04','Room4')
+INSERT INTO RoomCinemas VALUES('RC026','C04','RCT05','Room5')
+INSERT INTO RoomCinemas VALUES('RC027','C04','RCT06','Room6')
+INSERT INTO RoomCinemas VALUES('RC028','C04','RCT07','Room7')
+INSERT INTO RoomCinemas VALUES('RC029','C05','RCT01','Room1')
+INSERT INTO RoomCinemas VALUES('RC030','C05','RCT02','Room2')
+INSERT INTO RoomCinemas VALUES('RC031','C05','RCT03','Room3')
+INSERT INTO RoomCinemas VALUES('RC032','C05','RCT04','Room4')
+INSERT INTO RoomCinemas VALUES('RC033','C05','RCT05','Room5')
+INSERT INTO RoomCinemas VALUES('RC034','C05','RCT06','Room6')
+INSERT INTO RoomCinemas VALUES('RC035','C05','RCT07','Room7')
+
+CREATE TABLE SeatTypes (
+    SeatTypeID VARCHAR(10) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(20) NOT NULL,
+    Price MONEY
+)
+GO
+INSERT INTO SeatTypes VALUES ('ST01',N'Ghế Thường',140000)
+INSERT INTO SeatTypes VALUES ('ST02',N'Ghế Vip',200000)
+INSERT INTO SeatTypes VALUES ('ST03',N'Ghế Sweetbox',450000)
+
+CREATE TABLE Seats (
+    SeatID VARCHAR (3) NOT NULL PRIMARY KEY,
+    RoomCinemaID VARCHAR(5) CONSTRAINT FK_RC FOREIGN KEY (RoomCinemaID) REFERENCES RoomCinemas(RoomCinemaID),
+    SeatTypeID VARCHAR(10) CONSTRAINT FK_ST FOREIGN KEY (SeatTypeID) REFERENCES SeatTypes(SeatTypeID),
+    Name VARCHAR(5)
+)
+GO
+INSERT INTO Seats VALUES ('S01','RC001','ST01','A1')
+INSERT INTO Seats VALUES ('S02','RC001','ST01','A2')
+INSERT INTO Seats VALUES ('S03','RC001','ST01','A3')
+INSERT INTO Seats VALUES ('S04','RC001','ST01','A4')
+INSERT INTO Seats VALUES ('S05','RC001','ST01','A5')
+INSERT INTO Seats VALUES ('S06','RC001','ST01','A6')
+INSERT INTO Seats VALUES ('S07','RC001','ST02','B1')
+INSERT INTO Seats VALUES ('S08','RC001','ST02','B2')
+INSERT INTO Seats VALUES ('S09','RC001','ST02','B3')
+INSERT INTO Seats VALUES ('S10','RC001','ST02','B4')
+INSERT INTO Seats VALUES ('S11','RC001','ST02','B5')
+INSERT INTO Seats VALUES ('S12','RC001','ST02','B6')
+INSERT INTO Seats VALUES ('S13','RC001','ST03','C1')
+INSERT INTO Seats VALUES ('S14','RC001','ST03','C2')
+INSERT INTO Seats VALUES ('S15','RC001','ST03','C3')
+INSERT INTO Seats VALUES ('S16','RC002','ST01','A1')
+INSERT INTO Seats VALUES ('S17','RC002','ST01','A2')
+INSERT INTO Seats VALUES ('S18','RC002','ST01','A3')
+INSERT INTO Seats VALUES ('S19','RC002','ST01','A4')
+INSERT INTO Seats VALUES ('S20','RC002','ST01','A5')
+INSERT INTO Seats VALUES ('S21','RC002','ST01','A6')
+INSERT INTO Seats VALUES ('S22','RC002','ST02','B1')
+INSERT INTO Seats VALUES ('S23','RC002','ST02','B2')
+INSERT INTO Seats VALUES ('S24','RC002','ST02','B3')
+INSERT INTO Seats VALUES ('S25','RC002','ST02','B4')
+INSERT INTO Seats VALUES ('S26','RC002','ST02','B5')
+INSERT INTO Seats VALUES ('S27','RC002','ST02','B6')
+INSERT INTO Seats VALUES ('S28','RC002','ST03','C1')
+INSERT INTO Seats VALUES ('S29','RC002','ST03','C2')
+INSERT INTO Seats VALUES ('S30','RC002','ST03','C3')
+INSERT INTO Seats VALUES ('S31','RC008','ST01','A1')
+INSERT INTO Seats VALUES ('S32','RC008','ST01','A2')
+INSERT INTO Seats VALUES ('S33','RC008','ST01','A3')
+INSERT INTO Seats VALUES ('S34','RC008','ST01','A4')
+INSERT INTO Seats VALUES ('S35','RC008','ST01','A5')
+INSERT INTO Seats VALUES ('S36','RC008','ST01','A6')
+INSERT INTO Seats VALUES ('S37','RC008','ST02','B1')
+INSERT INTO Seats VALUES ('S38','RC008','ST02','B2')
+INSERT INTO Seats VALUES ('S39','RC008','ST02','B3')
+INSERT INTO Seats VALUES ('S40','RC008','ST02','B4')
+INSERT INTO Seats VALUES ('S41','RC008','ST02','B5')
+INSERT INTO Seats VALUES ('S42','RC008','ST02','B6')
+INSERT INTO Seats VALUES ('S43','RC008','ST03','C1')
+INSERT INTO Seats VALUES ('S44','RC008','ST03','C2')
+INSERT INTO Seats VALUES ('S45','RC008','ST03','C3')
+INSERT INTO Seats VALUES ('S46','RC015','ST01','A1')
+INSERT INTO Seats VALUES ('S47','RC015','ST01','A2')
+INSERT INTO Seats VALUES ('S48','RC015','ST01','A3')
+INSERT INTO Seats VALUES ('S49','RC015','ST01','A4')
+INSERT INTO Seats VALUES ('S50','RC015','ST01','A5')
+INSERT INTO Seats VALUES ('S51','RC015','ST01','A6')
+INSERT INTO Seats VALUES ('S52','RC015','ST02','B1')
+INSERT INTO Seats VALUES ('S53','RC015','ST02','B2')
+INSERT INTO Seats VALUES ('S54','RC015','ST02','B3')
+INSERT INTO Seats VALUES ('S55','RC015','ST02','B4')
+INSERT INTO Seats VALUES ('S56','RC015','ST02','B5')
+INSERT INTO Seats VALUES ('S57','RC015','ST02','B6')
+INSERT INTO Seats VALUES ('S58','RC015','ST03','C1')
+INSERT INTO Seats VALUES ('S59','RC015','ST03','C2')
+INSERT INTO Seats VALUES ('S60','RC015','ST03','C3')
+
+CREATE TABLE MovieTypes(
+    MovieTypeID VARCHAR(5) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(20)
+)
+GO
+INSERT INTO MovieTypes VALUES ('MT001',N'Hài Hước')
+INSERT INTO MovieTypes VALUES ('MT002',N'Hoạt Hình')
+INSERT INTO MovieTypes VALUES ('MT003',N'Tình Cảm')
+INSERT INTO MovieTypes VALUES ('MT004',N'Phiêu Lưu')
+INSERT INTO MovieTypes VALUES ('MT005',N'Tình Cảm')
+INSERT INTO MovieTypes VALUES ('MT006',N'Hành Động')
+INSERT INTO MovieTypes VALUES ('MT007',N'Kinh Dị')
+
+CREATE TABLE MovieFormats(
+    MovieFormatID VARCHAR(5) NOT NULL PRIMARY KEY,
+    Name VARCHAR(10)
+)
+GO
+INSERT INTO MovieFormats VALUES('MF001','2D')
+INSERT INTO MovieFormats VALUES('MF002','3D')
+
+CREATE TABLE Movies(
+    MovieID VARCHAR(5) NOT NULL PRIMARY KEY,
+    MovieTypeID VARCHAR(5) CONSTRAINT FK_MT FOREIGN KEY(MovieTypeID) REFERENCES MovieTypes(MovieTypeID),
+    MovieFormatID VARCHAR(5) CONSTRAINT FK_MF FOREIGN KEY(MovieFormatID) REFERENCES MovieFormats(MovieFormatID),
+    Name NVARCHAR(50),
+    Director NVARCHAR(50),
+    Language NVARCHAR(50),
+    ReleaseDate DATE,
+    Duration NVARCHAR(20),
+    MPAA VARCHAR(10)
+)
+GO
+INSERT INTO Movies VALUES ('M0001','MT004','MF002',N'Thế Giới Khủng Long: Lãnh Địa',N'Colin Trevorrow',N'Tiếng Việt','06-10-2022','147 Phút','C13')
+INSERT INTO Movies VALUES ('M0002','MT005','MF001',N'Em Và Trịnh',N'Phan Gia Nhật Linh',N'Tiếng Việt','06-17-2022','136 Phút','C13')
+INSERT INTO Movies VALUES ('M0003','MT005','MF001',N'Trịnh Công Sơn',N'Phan Gia Nhật Linh',N'Tiếng Việt','06-17-2022','95 Phút','C13')
+INSERT INTO Movies VALUES ('M0004','MT006','MF002',N'Phi Công Siêu Đẳng ',N'Joseph Kosinski',N'Tiếng Việt','05-27-2022','130 Phút','C13')
+INSERT INTO Movies VALUES ('M0005','MT004','MF001',N'HarryPotter Và Căn Phòng Bí Mật',N'Chris Columbus',N'Tiếng Việt','06-03-2022','161 Phút','P')
+
+
+CREATE TABLE TicketDetails(
+    MovieID VARCHAR(5) CONSTRAINT FK_M FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
+    TicketID VARCHAR(10) CONSTRAINT FK_T FOREIGN KEY (TicketID) REFERENCES Tickets(TicketID),
+    SeatID VARCHAR(3) CONSTRAINT FK_S FOREIGN KEY (SeatID) REFERENCES Seats(SeatID),
+    StartTime TIME,
+    EndTime TIME
+)
+GO
+
+INSERT INTO TicketDetails VALUES ('M0001','T00001','S12','16:00:00','18:30:00')
+INSERT INTO TicketDetails VALUES ('M0002','T00002','S37','21:00:00','23:20:00')
+INSERT INTO TicketDetails VALUES ('M0003','T00003','S53','22:00:00','23:40:00')
+INSERT INTO TicketDetails VALUES ('M0004','T00004','S44','22:30:00','00:50:00')
+
+SELECT * FROM Customers
+
+SELECT * FROM OrderFood
+SELECT * FROM FoodTypes
+SELECT * FROM Foods
+SELECT * FROM OFoodDetails
+SELECT * FROM Cinemas
+SELECT * FROM RoomCinemaTypes
+SELECT * FROM RoomCinemas
+SELECT * FROM SeatTypes
+SELECT * FROM Seats 
+SELECT * FROM MovieTypes
+SELECT * FROM MovieFormats
+SELECT * FROM Movies 
+SELECT * FROM TicketDetails
+SELECT * FROM Tickets
+SELECT Tickets.TicketID,RoomCinemas.RoomCinemaID, Movies.Name, Seats.Name, SUM(SeatTypes.Price + (OFoodDetails.Quantity * OFoodDetails.Price) ) AS Total
+FROM Tickets,RoomCinemas,Movies,Seats,SeatTypes,OFoodDetails,Customers,TicketDetails,OrderFood
+WHERE Tickets.TicketID = 'T00001' AND Customers.CusID = Tickets.CusID AND Tickets.TicketID = TicketDetails.TicketID
+AND TicketDetails.SeatID = Seats.SeatID AND TicketDetails.MovieID = Movies.MovieID AND Seats.SeatTypeID = SeatTypes.SeatTypeID 
+AND OFoodDetails.OrderFoodID = OrderFood.OrderFoodID AND OrderFood.CusID = Customers.CusID AND Seats.RoomCinemaID = RoomCinemas.RoomCinemaID
+GROUP BY Tickets.TicketID,RoomCinemas.RoomCinemaID,Movies.Name, Seats.Name
+
+SELECT *
+FROM Tickets,RoomCinemas,Movies,Seats,SeatTypes,OFoodDetails,Customers,TicketDetails,OrderFood
+WHERE Customers.CusID = '0001' AND Customers.CusID = Tickets.CusID AND Tickets.TicketID = TicketDetails.TicketID
+AND TicketDetails.SeatID = Seats.SeatID AND TicketDetails.MovieID = Movies.MovieID AND Seats.SeatTypeID = SeatTypes.SeatTypeID 
+AND OFoodDetails.OrderFoodID = OrderFood.OrderFoodID AND OrderFood.CusID = Customers.CusID AND Seats.RoomCinemaID = RoomCinemas.RoomCinemaID
